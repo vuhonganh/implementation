@@ -39,20 +39,28 @@ class TreebankReader:
         if self._tokens is not None:
             return self._tokens
         tokens = dict()
-
+        id2Tokens = []
         ss = self.get_sentences()
         idx = 0
         for s in ss:
             for w in s:
                 if w not in tokens:
                     tokens[w] = idx
+                    id2Tokens.append(w)  # this list increase along with idx
                     idx += 1
 
         # add Unknown word
         tokens['UNK'] = idx
         self._tokens = tokens
         self._vocab_size = len(tokens)
+        self._id2Tokens = id2Tokens
         return self._tokens
+
+    def get_id2Tokens(self):
+        if self._id2Tokens is None:
+            self.get_tokens()
+
+        return self._id2Tokens
 
     def get_vocab_size(self):
         if self._vocab_size is not None:

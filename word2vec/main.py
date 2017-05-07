@@ -25,7 +25,7 @@ def train(model, data_reader, n_train_steps, bSize, wSize):
 
 def main():
     wSize = 4
-    bSize = 16
+    bSize = 64
     eSize = 128
     lr = 0.005
     n_train_steps = 40000
@@ -36,6 +36,51 @@ def main():
     model.build_model()
     train(model, reader, n_train_steps, bSize, wSize)
 
+
+def word_analogy(embeddings, ia, ib, ic):
+    """
+    a:b :: c:?  -> find 10 candidates d the analogy word of c given relation a:b
+    example: man:woman :: king:queen
+    :param embeddings: embedding matrix: vector representation of words 
+    :param ia: index of word a
+    :param ib: index of word b
+    :param ic: index of word c 
+    :return: 10 top indices of d = argmax_i ((xb - xa + xc)^T . xi) / ||xb - xa + xc|| 
+    """
+    # renormalize embeddings to make sure
+    embeddings_norm = np.sqrt(np.sum(np.square(embeddings), axis=1, keepdims=True))
+    embeddings /= embeddings_norm
+    xa = embeddings[ia]
+    xb = embeddings[ib]
+    xc = embeddings[ic]
+    relation = xb - xa + xc
+    prod = embeddings.dot(relation)
+    prod_sorted_idx = np.argsort(prod)
+    return prod_sorted_idx[-10:]
+
+
+def closet_word(embeddings, idx):
+    # renormalize embeddings to make sure
+    embeddings_norm = np.sqrt(np.sum(np.square(embeddings), axis=1, keepdims=True))
+    embeddings /= embeddings_norm
+    curvec = embeddings[idx]
+    prod = embeddings.dot(curvec)
+    prod_sorted_idx = np.argsort(prod)
+    return prod_sorted_idx[-10:]
+
+
+def test_closest_word():
+    reader = TreebankReader()
+    embeddings = np.load('finalEmbed.npy')
+    tk = reader.get_tokens()
+    id2Tk = reader.get_id2Tokens()
+    idx = tk['film']
+    idds = closet_word(embeddings, idx)
+    closest_words = [id2Tk[idd] for idd in idds]
+    print(closest_words)
+    # the result is fair enough, but we need to filter out frequent words
+
 if __name__ == '__main__':
-    main()
+    # main()
+    test_closest_word()
 

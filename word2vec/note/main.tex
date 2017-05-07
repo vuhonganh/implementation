@@ -232,7 +232,7 @@ Keeping notations defined as above, we assume particularly $K$ the number of neg
 \begin{align}
 J_{NEG} = -\ln(\sigma(u_o^T v_c)) - \sum_{k=1}^K \ln(\sigma(-u_k^T v_c))
 \end{align}
-The idea is: if $u_o$ is the word that often goes with $v_c$ then its similarity is high. A measure for that is just a scalar product of two vectors. Also, when K samples are drawn, they have small chance to be close to $v_c$ given a big vocabulary. The distribution to draw sample is $Unigram^{3/4}$ to reduce the sampling of frequent words.
+The idea is: if $u_o$ is the word that often goes with $v_c$ then its similarity is high. A measure for that is just a scalar product of two vectors. Also, when K samples are drawn, they have small chance to be close to $v_c$ given a big vocabulary. The distribution to draw sample is $Unigram^{3/4}$ to reduce the sampling of frequent words. However we will use the NCE loss function provided by Tensorflow library and hence not to due with this sampling step. At test time, I found that some frequent words really affect the results. Maybe we need to filter out these frequent words and punctuation (dot, comma, etc.).
 
 % \chapter{Week 2}
 % \input{week2/note}
